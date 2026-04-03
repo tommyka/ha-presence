@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import logging
+import os
 from pathlib import Path
+import sys
 
 from ha_presence.config import ServiceConfig, UpdateSource
 from ha_presence.update.base import UpdateCandidate, Updater
 from ha_presence.update.git_updater import GitUpdater
 from ha_presence.update.share_updater import ShareUpdater
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateManager:
@@ -21,7 +26,7 @@ class UpdateManager:
             raise ValueError(msg)
 
         if self._config.update_source == UpdateSource.GIT:
-            return GitUpdater(self._config.update_location, self._config.update_ref)
+            return GitUpdater(self._config.update_location, self._config.update_ref, self._app_dir)
         if self._config.update_source == UpdateSource.SHARE:
             return ShareUpdater(Path(self._config.update_location))
 
@@ -40,3 +45,5 @@ class UpdateManager:
             msg = "Update source is disabled"
             raise RuntimeError(msg)
         updater.apply_update(candidate, self._app_dir)
+        logger.info("Update applied — restarting process")
+        os.execv(sys.executable, [sys.executable, *sys.argv])
