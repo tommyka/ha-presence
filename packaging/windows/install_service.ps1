@@ -13,14 +13,27 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$exe = "$WorkingDir\.venv\Scripts\ha-presence.exe"
+$python = "$WorkingDir\.venv\Scripts\python.exe"
+$exe    = "$WorkingDir\.venv\Scripts\ha-presence.exe"
 
 if (-not (Test-Path $exe)) {
     Write-Error "ha-presence not found at $exe. Run 'uv sync' in $WorkingDir first."
     exit 1
 }
 
-Write-Host "Installing Windows service from $exe"
+# pywin32 requires a post-install step to copy pythonservice.exe into place.
+# Without this, service registration fails with "access denied".
+$postInstall = "$WorkingDir\.venv\Scripts\pywin32_postinstall.py"
+if (Test-Path $postInstall) {
+    Write-Host "Running pywin32 post-install..."
+    & $python $postInstall -install
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "pywin32 post-install failed."
+        exit $LASTEXITCODE
+    }
+}
+
+Write-Host "Installing Windows service..."
 & $exe install-service
 
 if ($LASTEXITCODE -ne 0) {
