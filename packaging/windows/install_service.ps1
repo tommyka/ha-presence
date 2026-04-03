@@ -6,6 +6,13 @@ if (-not $WorkingDir) {
     $WorkingDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 }
 
+# Re-launch as Administrator if not already elevated
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Requesting Administrator privileges..."
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -WorkingDir `"$WorkingDir`""
+    exit
+}
+
 $exe = "$WorkingDir\.venv\Scripts\ha-presence.exe"
 
 if (-not (Test-Path $exe)) {
@@ -23,4 +30,4 @@ if ($LASTEXITCODE -ne 0) {
 
 Start-Service -Name "HAPresenceService"
 Write-Host "Service installed and started."
-Write-Host "To uninstall: $exe uninstall-service"
+Write-Host "To uninstall: run uninstall_service.ps1"

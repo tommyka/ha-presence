@@ -6,6 +6,13 @@ if (-not $WorkingDir) {
     $WorkingDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 }
 
+# Re-launch as Administrator if not already elevated
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Requesting Administrator privileges..."
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -WorkingDir `"$WorkingDir`""
+    exit
+}
+
 $exe = "$WorkingDir\.venv\Scripts\ha-presence.exe"
 
 if (-not (Test-Path $exe)) {
@@ -22,4 +29,4 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "Done. The install directory was left in place — remove it manually if needed."
+Write-Host "Done. The install directory was left in place remove it manually if needed."
