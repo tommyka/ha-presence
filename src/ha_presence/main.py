@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 from ha_presence import __version__
-from ha_presence.config import load_config
+from ha_presence.config import ServiceConfig, load_config
 from ha_presence.logging_setup import configure_logging
 from ha_presence.service import PresenceService
 from ha_presence.update.manager import UpdateManager
@@ -25,6 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("run", help="Run the presence service")
     sub.add_parser("check-update", help="Check if an update is available")
     sub.add_parser("apply-update", help="Apply available update")
+    sub.add_parser("show-config", help="Print the resolved configuration and exit")
     return parser
 
 
@@ -35,6 +36,10 @@ def main() -> int:
 
     config = load_config(config_file=args.config)
     app_dir = Path.cwd()
+
+    if args.command == "show-config":
+        _print_config(config)
+        return 0
 
     if args.command == "run":
         PresenceService(config, app_dir=app_dir).run()
@@ -60,6 +65,30 @@ def main() -> int:
 
     parser.error(f"Unknown command: {args.command}")
     return 2
+
+
+def _print_config(config: ServiceConfig) -> None:
+    password = "***" if config.mqtt_password else None
+    rows = [
+        ("presence.hostname",          config.hostname),
+        ("presence.site",              config.site),
+        ("presence.heartbeat_seconds", config.heartbeat_seconds),
+        ("mqtt.host",                  config.mqtt_host),
+        ("mqtt.port",                  config.mqtt_port),
+        ("mqtt.username",              config.mqtt_username or "(not set)"),
+        ("mqtt.password",              password or "(not set)"),
+        ("mqtt.topic_prefix",          config.mqtt_topic_prefix),
+        ("mqtt.base_topic",            config.base_topic),
+        ("update.source",              config.update_source.value),
+        ("update.location",            config.update_location or "(not set)"),
+        ("update.ref",                 config.update_ref),
+        ("update.poll_seconds",        config.update_poll_seconds),
+    ]
+    width = max(len(k) for k, _ in rows)
+    print("Resolved configuration:")
+    print("-" * (width + 20))
+    for key, value in rows:
+        print(f"  {key:<{width}}  {value}")
 
 
 if __name__ == "__main__":
