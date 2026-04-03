@@ -50,7 +50,7 @@ The following locations are checked in order:
 | `HA_PRESENCE_MQTT_PORT` | MQTT broker port (default: `1883`) |
 | `HA_PRESENCE_MQTT_USERNAME` | MQTT username |
 | `HA_PRESENCE_MQTT_PASSWORD` | MQTT password |
-| `HA_PRESENCE_MQTT_TOPIC_PREFIX` | MQTT topic prefix (default: `home`) |
+| `HA_PRESENCE_MQTT_TOPIC_PREFIX` | MQTT topic prefix (default: `ha-presence`) |
 | `HA_PRESENCE_UPDATE_SOURCE` | `none` \| `git` \| `share` (default: `none`) |
 | `HA_PRESENCE_UPDATE_LOCATION` | Git URL or share path (required when source is not `none`) |
 | `HA_PRESENCE_UPDATE_REF` | Git ref to track (default: `main`) |

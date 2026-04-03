@@ -25,7 +25,7 @@ port = 1883
 # password = "mqtt-password"
 
 # Prefix for all published MQTT topics  (<prefix>/<site>/<hostname>/...)
-topic_prefix = "home"
+topic_prefix = "ha-presence"
 
 [update]
 # Auto-update strategy: "none" | "git" | "share"
