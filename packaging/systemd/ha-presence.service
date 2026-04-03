@@ -1,3 +1,9 @@
+# This file is a reference template only.
+# Use packaging/systemd/install.sh to generate and install the real unit file
+# with the correct paths for your system.
+#
+#   sudo ./packaging/systemd/install.sh --dir /opt/ha-presence
+
 [Unit]
 Description=HA Presence Service
 After=network-online.target
@@ -7,9 +13,10 @@ Wants=network-online.target
 Type=simple
 User=ha-presence
 WorkingDirectory=/opt/ha-presence
-ExecStart=/opt/ha-presence/.venv/bin/ha-presence run
+ExecStart=uv run --no-sync ha-presence run
 Restart=always
 RestartSec=5
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target

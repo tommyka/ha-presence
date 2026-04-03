@@ -64,6 +64,27 @@ uv run pytest
 ```
 
 ## Packaging
-- Linux: `packaging/systemd/ha-presence.service`
-- Windows: `packaging/windows/install_service.ps1`
+
+**Linux (systemd)**
+
+```bash
+sudo ./packaging/systemd/install.sh --dir /opt/ha-presence
+```
+
+Options:
+- `--dir` — where the project lives (default: `/opt/ha-presence`)
+- `--user` — system user to run the service as (default: `ha-presence`, created if missing)
+
+The script creates the user, runs `uv sync`, writes the unit file with the correct paths, and enables + starts the service.
+
+**Windows**
+
+```powershell
+.\packaging\windows\install_service.ps1 -WorkingDir "C:\ha-presence"
+```
+
+Options:
+- `-WorkingDir` — where the project lives (default: `C:\ha-presence`)
+- `-UvExe` — path to `uv` if it's not on `PATH` (default: `uv`)
+
 
