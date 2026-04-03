@@ -1,16 +1,22 @@
 param(
-    [string]$ServiceName = "HAPresenceService",
-    [string]$UvExe = "uv",
-    [string]$WorkingDir = "C:\\ha-presence"
+    [string]$WorkingDir = $PSScriptRoot ? (Split-Path $PSScriptRoot -Parent) : (Get-Location).Path
 )
 
-$binaryPath = "$UvExe run --no-sync --directory `"$WorkingDir`" ha-presence run"
+$exe = "$WorkingDir\.venv\Scripts\ha-presence.exe"
 
-if (Get-Service -Name $ServiceName -ErrorAction SilentlyContinue) {
-    Write-Host "Service $ServiceName already exists"
-    exit 0
+if (-not (Test-Path $exe)) {
+    Write-Error "ha-presence not found at $exe. Run 'uv sync' in $WorkingDir first."
+    exit 1
 }
 
-New-Service -Name $ServiceName -BinaryPathName $binaryPath -DisplayName "HA Presence Service" -StartupType Automatic
-Start-Service -Name $ServiceName
-Write-Host "Service installed and started"
+Write-Host "Installing Windows service from $exe"
+& $exe install-service
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Service installation failed."
+    exit $LASTEXITCODE
+}
+
+Start-Service -Name "HAPresenceService"
+Write-Host "Service installed and started."
+Write-Host "To uninstall: $exe uninstall-service"

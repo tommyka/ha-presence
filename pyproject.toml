@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 authors = [{ name = "ha-presence contributors" }]
 dependencies = [
   "paho-mqtt>=2.0.0",
+  "pywin32>=306; sys_platform == 'win32'",
 ]
 
 [project.scripts]

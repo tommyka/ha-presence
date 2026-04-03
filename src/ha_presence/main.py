@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import sys
 
 from ha_presence import __version__
 from ha_presence.config import ServiceConfig, load_config
@@ -26,6 +27,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("check-update", help="Check if an update is available")
     sub.add_parser("apply-update", help="Apply available update")
     sub.add_parser("show-config", help="Print the resolved configuration and exit")
+    if sys.platform == "win32":
+        sub.add_parser("install-service", help="Register ha-presence as a Windows service (run as Administrator)")
+        sub.add_parser("uninstall-service", help="Remove the Windows service registration (run as Administrator)")
     return parser
 
 
@@ -33,6 +37,16 @@ def main() -> int:
     configure_logging()
     parser = build_parser()
     args = parser.parse_args()
+
+    if args.command == "install-service":
+        from ha_presence.platform.windows_service import handle_command
+        handle_command("install")
+        return 0
+
+    if args.command == "uninstall-service":
+        from ha_presence.platform.windows_service import handle_command
+        handle_command("remove")
+        return 0
 
     config = load_config(config_file=args.config)
     app_dir = Path.cwd()

@@ -3,7 +3,7 @@
 # Usage: sudo ./install.sh [--dir /opt/ha-presence] [--user ha-presence]
 set -euo pipefail
 
-INSTALL_DIR="/opt/ha-presence"
+INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SERVICE_USER="ha-presence"
 SERVICE_NAME="ha-presence"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
@@ -58,10 +58,9 @@ Wants=network-online.target
 Type=simple
 User=${SERVICE_USER}
 WorkingDirectory=${INSTALL_DIR}
-ExecStart=uv run --no-sync ha-presence run
+ExecStart=${INSTALL_DIR}/.venv/bin/ha-presence run
 Restart=always
 RestartSec=5
-Environment=PATH=/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target

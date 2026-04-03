@@ -13,10 +13,9 @@ Wants=network-online.target
 Type=simple
 User=ha-presence
 WorkingDirectory=/opt/ha-presence
-ExecStart=uv run --no-sync ha-presence run
+ExecStart=/opt/ha-presence/.venv/bin/ha-presence run
 Restart=always
 RestartSec=5
-Environment=PATH=/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target
