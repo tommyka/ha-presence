@@ -47,11 +47,19 @@ class HAPresenceWindowsService(win32serviceutil.ServiceFramework):
 
 
 def handle_command(action: str) -> None:
-    """Run a pywin32 service management command (install, remove, start, stop)."""
-    win32serviceutil.HandleCommandLine(
-        HAPresenceWindowsService,
-        argv=[sys.argv[0], action],
+    """Run a pywin32 service management command via the venv Python interpreter.
+
+    pywin32's HandleCommandLine needs to be invoked from a .py file so it can
+    determine which module to register with pythonservice.exe. Calling it from
+    a compiled entry-point wrapper (ha-presence.exe) doesn't give it that
+    information, resulting in an access denied / registration error.
+    """
+    import subprocess
+    result = subprocess.run(
+        [sys.executable, "-m", "ha_presence.platform.windows_service", action],
+        check=False,
     )
+    sys.exit(result.returncode)
 
 
 if __name__ == "__main__":
@@ -61,4 +69,5 @@ if __name__ == "__main__":
         servicemanager.PrepareToHostSingle(HAPresenceWindowsService)
         servicemanager.StartServiceCtrlDispatcher()
     else:
+        # Called as: python -m ha_presence.platform.windows_service install|remove
         win32serviceutil.HandleCommandLine(HAPresenceWindowsService)
