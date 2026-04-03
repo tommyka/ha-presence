@@ -1,0 +1,15 @@
+[Unit]
+Description=HA Presence Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ha-presence
+WorkingDirectory=/opt/ha-presence
+ExecStart=/opt/ha-presence/.venv/bin/ha-presence run
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ha-presence-service"
+version = "0.1.0"
+description = "Host presence MQTT service for Home Assistant with self-update support"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "ha-presence contributors" }]
+dependencies = [
+  "paho-mqtt>=2.0.0",
+]
+
+[project.scripts]
+ha-presence = "ha_presence.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ha_presence"]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+]

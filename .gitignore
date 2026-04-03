@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Distribution / build
+dist/
+build/
+*.egg-info/
+
+# uv / virtualenv
+.venv/
+uv.lock
+
+# Secrets / local config
+ha-presence.toml
+
+# macOS
+.DS_Store
