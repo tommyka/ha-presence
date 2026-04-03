@@ -1,6 +1,10 @@
 param(
-    [string]$WorkingDir = $PSScriptRoot ? (Split-Path $PSScriptRoot -Parent) : (Get-Location).Path
+    [string]$WorkingDir = ""
 )
+
+if (-not $WorkingDir) {
+    $WorkingDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+}
 
 $exe = "$WorkingDir\.venv\Scripts\ha-presence.exe"
 
